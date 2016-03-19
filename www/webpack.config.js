@@ -8,7 +8,10 @@ module.exports = {
     filename: './js/react-app-bundle.js'
   },
   externals: {
-    'react': 'window.React'
+    'react': 'window.React',
+    "_":"window._",
+    "$":"window.$",
+    "jQuery":"window.jQuery"
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
