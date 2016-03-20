@@ -32,7 +32,38 @@ var AppActions = {
                 alert(d.responseText);
             }
         });
+    },
+
+
+    initTopicList:function(){
+        AppCommon.ajax("/app/blog/getAllModuleList.json").req(function (d) {
+            if (d.responseCode === 0) {
+                AppStore.setTopicList(d.data);
+                AppStore.emitChange();
+            }else {
+                alert(d.responseText);
+            }
+        });
+    },
+
+    onClickGoToTopicList:function(){
+        AppStore.setTopicPage("topicList");
+        AppStore.emitChange();
+    },
+
+    onClickGoToPostList:function(topic){
+        var moduleId = topic.id;
+        AppStore.setTopicPage("postListPage");
+        AppCommon.ajax("/app/blog/getPostList.json").params({moduleId:moduleId, pageSize:10, pageNumber:1}).req(function (d) {
+            if (d.responseCode === 0) {
+                AppStore.setPostListPage(d.data);
+                AppStore.emitChange();
+            }else {
+                alert(d.responseText);
+            }
+        });
     }
+
 };
 
 

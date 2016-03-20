@@ -43,13 +43,13 @@ var UserPage = React.createClass({
                 <div className="cp-input cp-line">
                     <label>
                         <span>用户名</span>
-                        <input type="text" ref="username"/>
+                        <input type="text" ref="username" value="luanhaipeng"/>
                     </label>
                 </div>
                 <div className="cp-input cp-line">
                     <label>
                         <span>密&nbsp;码 </span>
-                        <input type="password" ref="password"/>
+                        <input type="password" ref="password" value="xiaozhu123!"/>
                     </label>
                 </div>
                 <div className="cp-msg">{state.loginMsg}</div>

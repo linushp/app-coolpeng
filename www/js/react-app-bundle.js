@@ -48,8 +48,8 @@
 
 	var React = __webpack_require__(1);
 	var AppStore = __webpack_require__(2);
-	var AppActions = __webpack_require__(4);
-	var AppCommon = __webpack_require__(6);
+	var AppActions = __webpack_require__(6);
+	var AppCommon = __webpack_require__(4);
 
 	var HomePage = __webpack_require__(8);
 	var TopicPage = __webpack_require__(9);
@@ -82,6 +82,60 @@
 
 	    render: function render() {
 	        var state = this.state;
+
+	        var viewPage;
+	        if (state.tabIndex == 0) {
+	            viewPage = React.createElement(
+	                "div",
+	                { className: ["cp-view-p", "cp-view0", "on"].join(" ") },
+	                React.createElement(
+	                    HomePage,
+	                    null,
+	                    " "
+	                )
+	            );
+	        } else if (state.tabIndex == 1) {
+	            viewPage = React.createElement(
+	                "div",
+	                { className: ["cp-view-p", "cp-view1", "on"].join(" ") },
+	                React.createElement(
+	                    TopicPage,
+	                    { topicList: state.topicList, postListPage: state.postListPage, topicPage: state.topicPage },
+	                    " "
+	                )
+	            );
+	        } else if (state.tabIndex == 2) {
+	            viewPage = React.createElement(
+	                "div",
+	                { className: ["cp-view-p", "cp-view2", "on"].join(" ") },
+	                React.createElement(
+	                    MsgPage,
+	                    null,
+	                    " "
+	                )
+	            );
+	        } else if (state.tabIndex == 3) {
+	            viewPage = React.createElement(
+	                "div",
+	                { className: ["cp-view-p", "cp-view3", "on"].join(" ") },
+	                React.createElement(
+	                    PicPage,
+	                    null,
+	                    " "
+	                )
+	            );
+	        } else if (state.tabIndex == 4) {
+	            viewPage = React.createElement(
+	                "div",
+	                { className: ["cp-view-p", "cp-view4", "on"].join(" ") },
+	                React.createElement(
+	                    UserPage,
+	                    { currentUser: state.currentUser },
+	                    " "
+	                )
+	            );
+	        }
+
 	        return React.createElement(
 	            "div",
 	            { className: "cp-page" },
@@ -94,60 +148,7 @@
 	                "div",
 	                { className: "cp-view" },
 	                React.createElement("div", { className: "cp-nav-p" }),
-	                React.createElement(
-	                    "div",
-	                    { className: ["cp-view-p", "cp-view0", state.tabIndex == 0 ? "on" : "off"].join(" ") },
-	                    " ",
-	                    React.createElement(
-	                        HomePage,
-	                        null,
-	                        " "
-	                    )
-	                ),
-	                React.createElement(
-	                    "div",
-	                    { className: ["cp-view-p", "cp-view1", state.tabIndex == 1 ? "on" : "off"].join(" ") },
-	                    " ",
-	                    React.createElement(
-	                        TopicPage,
-	                        null,
-	                        " "
-	                    ),
-	                    " "
-	                ),
-	                React.createElement(
-	                    "div",
-	                    { className: ["cp-view-p", "cp-view2", state.tabIndex == 2 ? "on" : "off"].join(" ") },
-	                    " ",
-	                    React.createElement(
-	                        MsgPage,
-	                        null,
-	                        " "
-	                    ),
-	                    " "
-	                ),
-	                React.createElement(
-	                    "div",
-	                    { className: ["cp-view-p", "cp-view3", state.tabIndex == 3 ? "on" : "off"].join(" ") },
-	                    " ",
-	                    React.createElement(
-	                        PicPage,
-	                        null,
-	                        " "
-	                    ),
-	                    " "
-	                ),
-	                React.createElement(
-	                    "div",
-	                    { className: ["cp-view-p", "cp-view4", state.tabIndex == 4 ? "on" : "off"].join(" ") },
-	                    " ",
-	                    React.createElement(
-	                        UserPage,
-	                        { currentUser: state.currentUser },
-	                        " "
-	                    ),
-	                    " "
-	                ),
+	                viewPage,
 	                React.createElement("div", { className: "cp-tabs-p" })
 	            ),
 	            React.createElement(
@@ -210,6 +211,7 @@
 	"use strict";
 
 	var _ = __webpack_require__(3);
+	var AppCommon = __webpack_require__(4);
 	var localStorage = window.localStorage;
 
 	var listeners = [];
@@ -229,28 +231,37 @@
 	    data: {
 	        title: "首页",
 	        tabIndex: 0,
-	        currentUser: (function () {
-	            var currentUser = localStorage.getItem("currentUser");
-	            if (currentUser && currentUser.length > 0) {
-	                return JSON.parse(currentUser);
-	            }
-	            return null;
-	        })()
+	        currentUser: AppCommon.getDataFromLocalStorage("currentUser"),
+	        topicList: AppCommon.getDataFromLocalStorage("topicList"),
+	        topicPage: "topicList", //topicList,postListPage,postDetail
+	        postListPage: []
 	    },
 
 	    getALL: function getALL() {
 	        return this.data;
 	    },
 
-	    setCurrentUser: function setCurrentUser(currentUser) {
-	        if (currentUser) {
-	            this.data.currentUser = currentUser;
-	            currentUser = JSON.stringify(currentUser);
-	            localStorage.setItem("currentUser", currentUser);
-	        } else {
-	            this.data.currentUser = null;
-	            localStorage.removeItem("currentUser");
+	    setData: function setData(dataKey, dataValue, isUserLocalStorage) {
+	        this.data[dataKey] = dataValue;
+	        if (isUserLocalStorage) {
+	            AppCommon.setDataToLocalStorage(dataKey, dataValue);
 	        }
+	    },
+
+	    setTopicPage: function setTopicPage(topicPage) {
+	        AppStore.setData("topicPage", topicPage, false);
+	    },
+
+	    setCurrentUser: function setCurrentUser(currentUser) {
+	        AppStore.setData("currentUser", currentUser, true);
+	    },
+
+	    setTopicList: function setTopicList(topicList) {
+	        AppStore.setData("topicList", topicList, true);
+	    },
+
+	    setPostListPage: function setPostListPage(postListPage) {
+	        AppStore.setData("postListPage", postListPage, false);
 	    },
 
 	    setTabIndex: function setTabIndex(tabIndex) {
@@ -296,69 +307,25 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	var _ = __webpack_require__(3);
-
-	var AppDispatcher = __webpack_require__(5);
-	var AppStore = __webpack_require__(2);
-	var AppCommon = __webpack_require__(6);
-
-	var AppActions = {
-	    onClickTab: function onClickTab(tabIndex, tabName) {
-	        AppStore.setTabIndex(tabIndex);
-	        AppStore.setTitle(tabName);
-	        AppStore.emitChange();
-	    },
-
-	    onClickLogin: function onClickLogin(username, password) {
-	        AppCommon.ajax("/app/user/login.json").params({ username: username, password: password }).req(function (d) {
-	            if (d.responseCode === 0) {
-	                AppStore.setCurrentUser(d.data);
-	                AppStore.emitChange();
-	            } else {
-	                alert(d.responseText);
-	            }
-	        });
-	    },
-	    onClickLogout: function onClickLogout(currentUser) {
-	        var tokenId = currentUser.lastLoginToken || "";
-	        AppCommon.ajax("/app/user/logout.json").params({ tokenId: tokenId }).req(function (d) {
-	            if (d.responseCode === 0) {
-	                AppStore.setCurrentUser(null);
-	                AppStore.emitChange();
-	            } else {
-	                alert(d.responseText);
-	            }
-	        });
-	    }
-	};
-
-	module.exports = AppActions;
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	/**
-	 * Created by user1 on 2016/3/18.
-	 */
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
 	"use strict";
 
 	var _ = __webpack_require__(3);
-	var $ = __webpack_require__(7);
+	var $ = __webpack_require__(5);
 
 	var contextURL = "http://192.168.0.105:9090/coolpeng";
 
 	var AppCommon = {
+
+	    /**
+	     * 全局路径
+	     */
 	    contextURL: contextURL,
+
+	    /**
+	     * 转换成参数字符串
+	     * @param paramObject
+	     * @returns {*}
+	     */
 	    toQueryParam: function toQueryParam(paramObject) {
 	        var paramArray = _.map(paramObject, function (value, key) {
 	            return key + "=" + encodeURIComponent(value);
@@ -369,6 +336,38 @@
 	        return "";
 	    },
 
+	    /**
+	     * 从本地存储中获取数据
+	     * @param key
+	     * @returns {null}
+	     */
+	    getDataFromLocalStorage: function getDataFromLocalStorage(key) {
+	        var dataStr = localStorage.getItem(key);
+	        if (dataStr && dataStr.length > 0) {
+	            return JSON.parse(dataStr);
+	        }
+	        return null;
+	    },
+
+	    /**
+	     * 设置本地存储中的数据
+	     * @param key
+	     * @param value
+	     * @returns {null}
+	     */
+	    setDataToLocalStorage: function setDataToLocalStorage(key, value) {
+	        if (value) {
+	            value = JSON.stringify(value);
+	            localStorage.setItem(key, value);
+	        } else {
+	            localStorage.removeItem(key);
+	        }
+	    },
+
+	    /**
+	     * Ajax
+	     * @param url
+	     */
 	    ajax: function ajax(url) {
 	        var config = {
 	            url: contextURL + url,
@@ -377,9 +376,8 @@
 	            type: "post",
 	            success: function success(data) {},
 	            beforeSend: function beforeSend(XMLHttpRequest) {
-	                var currentUser = localStorage.getItem("currentUser");
-	                if (currentUser && currentUser.length > 0) {
-	                    currentUser = JSON.parse(currentUser);
+	                var currentUser = AppCommon.getDataFromLocalStorage("currentUser");
+	                if (currentUser) {
 	                    XMLHttpRequest.setRequestHeader("tmsApp.tokenId", currentUser.lastLoginToken);
 	                } else {
 	                    XMLHttpRequest.setRequestHeader("tmsApp.tokenId", "");
@@ -421,10 +419,94 @@
 	module.exports = AppCommon;
 
 /***/ },
-/* 7 */
+/* 5 */
 /***/ function(module, exports) {
 
 	module.exports = window.jQuery;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _ = __webpack_require__(3);
+
+	var AppDispatcher = __webpack_require__(7);
+	var AppStore = __webpack_require__(2);
+	var AppCommon = __webpack_require__(4);
+
+	var AppActions = {
+	    onClickTab: function onClickTab(tabIndex, tabName) {
+	        AppStore.setTabIndex(tabIndex);
+	        AppStore.setTitle(tabName);
+	        AppStore.emitChange();
+	    },
+
+	    onClickLogin: function onClickLogin(username, password) {
+	        AppCommon.ajax("/app/user/login.json").params({ username: username, password: password }).req(function (d) {
+	            if (d.responseCode === 0) {
+	                AppStore.setCurrentUser(d.data);
+	                AppStore.emitChange();
+	            } else {
+	                alert(d.responseText);
+	            }
+	        });
+	    },
+	    onClickLogout: function onClickLogout(currentUser) {
+	        var tokenId = currentUser.lastLoginToken || "";
+	        AppCommon.ajax("/app/user/logout.json").params({ tokenId: tokenId }).req(function (d) {
+	            if (d.responseCode === 0) {
+	                AppStore.setCurrentUser(null);
+	                AppStore.emitChange();
+	            } else {
+	                alert(d.responseText);
+	            }
+	        });
+	    },
+
+	    initTopicList: function initTopicList() {
+	        AppCommon.ajax("/app/blog/getAllModuleList.json").req(function (d) {
+	            if (d.responseCode === 0) {
+	                AppStore.setTopicList(d.data);
+	                AppStore.emitChange();
+	            } else {
+	                alert(d.responseText);
+	            }
+	        });
+	    },
+
+	    onClickGoToTopicList: function onClickGoToTopicList() {
+	        AppStore.setTopicPage("topicList");
+	        AppStore.emitChange();
+	    },
+
+	    onClickGoToPostList: function onClickGoToPostList(topic) {
+	        var moduleId = topic.id;
+	        AppStore.setTopicPage("postListPage");
+	        AppCommon.ajax("/app/blog/getPostList.json").params({ moduleId: moduleId, pageSize: 10, pageNumber: 1 }).req(function (d) {
+	            if (d.responseCode === 0) {
+	                AppStore.setPostListPage(d.data);
+	                AppStore.emitChange();
+	            } else {
+	                alert(d.responseText);
+	            }
+	        });
+	    }
+
+	};
+
+	module.exports = AppActions;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/**
+	 * Created by user1 on 2016/3/18.
+	 */
 
 /***/ },
 /* 8 */
@@ -500,6 +582,7 @@
 
 	var _ = __webpack_require__(3);
 	var React = __webpack_require__(1);
+	var AppActions = __webpack_require__(6);
 
 	var TopicPage = React.createClass({
 	    displayName: "TopicPage",
@@ -514,31 +597,101 @@
 
 	    componentWillUnmount: function componentWillUnmount() {},
 
-	    onClickTab: function onClickTab(index) {},
+	    onClickGoToPostList: function onClickGoToPostList(topic) {
+	        AppActions.onClickGoToPostList(topic);
+	    },
 
-	    render: function render() {
-	        var state = this.state;
-	        var dataList = state.dataList || [];
+	    renderTopicList: function renderTopicList() {
+	        var that = this;
+	        var props = this.props;
+	        var topicList = props.topicList;
+
+	        if (!topicList) {
+	            AppActions.initTopicList();
+	            return React.createElement(
+	                "div",
+	                null,
+	                "加载中..."
+	            );
+	        }
+
 	        return React.createElement(
 	            "div",
-	            { className: "cp-home" },
-	            _.map(dataList, function (d) {
+	            { className: "cp-topic" },
+	            _.map(topicList, function (d) {
 	                return React.createElement(
 	                    "div",
-	                    { className: "cp-item" },
+	                    { className: "cp-topic-item", onClick: that.onClickGoToPostList.bind(that, d) },
 	                    React.createElement(
 	                        "h3",
 	                        null,
-	                        d.title
+	                        d.moduleName
 	                    ),
 	                    React.createElement(
 	                        "div",
 	                        null,
-	                        d.message
+	                        d.moduleDesc
 	                    )
 	                );
 	            })
 	        );
+	    },
+
+	    onClickGoToPosDetail: function onClickGoToPosDetail() {},
+
+	    onClickGoToTopicList: function onClickGoToTopicList() {
+	        AppActions.onClickGoToTopicList();
+	    },
+
+	    renderPostList: function renderPostList() {
+	        var that = this;
+	        var props = this.props;
+	        var postListPage = props.postListPage || {};
+	        var postList = postListPage.pageData || [];
+
+	        return React.createElement(
+	            "div",
+	            { className: "cp-topic" },
+	            React.createElement(
+	                "div",
+	                { onClick: that.onClickGoToTopicList.bind(that) },
+	                "返回"
+	            ),
+	            _.map(postList, function (d) {
+	                return React.createElement(
+	                    "div",
+	                    { className: "cp-topic-item", onClick: that.onClickGoToPosDetail.bind(that, d) },
+	                    React.createElement(
+	                        "h3",
+	                        null,
+	                        d.postTitle
+	                    ),
+	                    React.createElement(
+	                        "div",
+	                        null,
+	                        d.summary
+	                    )
+	                );
+	            })
+	        );
+	    },
+
+	    renderPostDetail: function renderPostDetail() {},
+
+	    render: function render() {
+
+	        var state = this.state;
+	        var props = this.props;
+	        var topicPage = props.topicPage;
+	        if (topicPage === "topicList") {
+	            return this.renderTopicList();
+	        } else if (topicPage === "postListPage") {
+	            return this.renderPostList();
+	        } else if (topicPage === "postDetail") {
+	            return this.renderPostDetail();
+	        } else {
+	            return this.renderTopicList();
+	        }
 	    }
 	});
 
@@ -656,8 +809,8 @@
 
 	var _ = __webpack_require__(3);
 	var React = __webpack_require__(1);
-	var AppCommon = __webpack_require__(6);
-	var AppActions = __webpack_require__(4);
+	var AppCommon = __webpack_require__(4);
+	var AppActions = __webpack_require__(6);
 
 	var UserPage = React.createClass({
 	    displayName: "UserPage",
@@ -703,7 +856,7 @@
 	                        null,
 	                        "用户名"
 	                    ),
-	                    React.createElement("input", { type: "text", ref: "username" })
+	                    React.createElement("input", { type: "text", ref: "username", value: "luanhaipeng" })
 	                )
 	            ),
 	            React.createElement(
@@ -717,7 +870,7 @@
 	                        null,
 	                        "密 码 "
 	                    ),
-	                    React.createElement("input", { type: "password", ref: "password" })
+	                    React.createElement("input", { type: "password", ref: "password", value: "xiaozhu123!" })
 	                )
 	            ),
 	            React.createElement(

@@ -5,7 +5,18 @@ var contextURL = "http://192.168.0.105:9090/coolpeng";
 
 
 var AppCommon = {
+
+    /**
+     * 全局路径
+     */
     contextURL:contextURL,
+
+
+    /**
+     * 转换成参数字符串
+     * @param paramObject
+     * @returns {*}
+     */
     toQueryParam: function (paramObject) {
         var paramArray = _.map(paramObject, function (value, key) {
             return key + "=" + encodeURIComponent(value);
@@ -16,6 +27,42 @@ var AppCommon = {
         return "";
     },
 
+
+    /**
+     * 从本地存储中获取数据
+     * @param key
+     * @returns {null}
+     */
+    getDataFromLocalStorage: function (key) {
+        var dataStr = localStorage.getItem(key);
+        if (dataStr && dataStr.length > 0) {
+            return JSON.parse(dataStr);
+        }
+        return null;
+    },
+
+
+
+    /**
+     * 设置本地存储中的数据
+     * @param key
+     * @param value
+     * @returns {null}
+     */
+    setDataToLocalStorage: function (key,value) {
+        if(value){
+            value = JSON.stringify(value);
+            localStorage.setItem(key,value);
+        }else {
+            localStorage.removeItem(key);
+        }
+    },
+
+
+    /**
+     * Ajax
+     * @param url
+     */
     ajax: function (url) {
         var config = {
             url: (contextURL + url),
@@ -25,9 +72,8 @@ var AppCommon = {
             success: function (data) {
             },
             beforeSend: function(XMLHttpRequest) {
-                var currentUser = localStorage.getItem("currentUser");
-                if(currentUser && currentUser.length>0){
-                    currentUser = JSON.parse(currentUser);
+                var currentUser =  AppCommon.getDataFromLocalStorage("currentUser");
+                if(currentUser){
                     XMLHttpRequest.setRequestHeader("tmsApp.tokenId", currentUser.lastLoginToken);
                 }else {
                     XMLHttpRequest.setRequestHeader("tmsApp.tokenId", "");

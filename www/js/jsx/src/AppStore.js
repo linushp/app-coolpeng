@@ -1,4 +1,5 @@
 var _ = require("_");
+var AppCommon = require("./AppCommon");
 var localStorage = window.localStorage;
 
 var listeners = [];
@@ -15,37 +16,50 @@ var findListener = function (foo) {
 };
 
 
+
+
 var AppStore = {
 
 
     data: {
         title: "首页",
-        tabIndex: 0 ,
-        currentUser:(function(){
-            var currentUser = localStorage.getItem("currentUser");
-            if(currentUser && currentUser.length>0){
-                return JSON.parse(currentUser);
-            }
-            return null;
-        })()
+        tabIndex: 0,
+        currentUser: AppCommon.getDataFromLocalStorage("currentUser"),
+        topicList: AppCommon.getDataFromLocalStorage("topicList"),
+        topicPage:"topicList", //topicList,postListPage,postDetail
+        postListPage:[]
     },
 
     getALL: function () {
         return this.data;
     },
 
-    setCurrentUser:function(currentUser){
-        if(currentUser){
-            this.data.currentUser = currentUser;
-            currentUser = JSON.stringify(currentUser);
-            localStorage.setItem("currentUser",currentUser);
-        }else {
-            this.data.currentUser = null;
-            localStorage.removeItem("currentUser");
+    setData:function(dataKey,dataValue,isUserLocalStorage){
+        this.data[dataKey] = dataValue;
+        if(isUserLocalStorage){
+            AppCommon.setDataToLocalStorage(dataKey, dataValue);
         }
     },
 
-    setTabIndex:function(tabIndex){
+    setTopicPage:function(topicPage){
+        AppStore.setData("topicPage",topicPage,false);
+    },
+
+    setCurrentUser: function (currentUser) {
+        AppStore.setData("currentUser",currentUser,true)
+    },
+
+    setTopicList: function (topicList) {
+        AppStore.setData("topicList",topicList,true)
+    },
+
+    setPostListPage:function(postListPage){
+        AppStore.setData("postListPage",postListPage,false);
+    },
+
+
+
+    setTabIndex: function (tabIndex) {
         this.data.tabIndex = tabIndex;
     },
 
@@ -55,11 +69,10 @@ var AppStore = {
     },
 
 
-
     emitChange: function () {
         for (var i = 0; i < listeners.length; i++) {
             var obj = listeners[i];
-            if(_.isFunction(obj)){
+            if (_.isFunction(obj)) {
                 obj();
             }
         }
