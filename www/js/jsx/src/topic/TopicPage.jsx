@@ -52,12 +52,12 @@ var TopicPage = React.createClass({
     },
 
 
-    onClickGoToPosDetail: function () {
-
+    onClickGoToPostDetail: function (post) {
+        AppActions.onClickGoToPostDetail(post);
     },
 
-    onClickGoToTopicList: function () {
-        AppActions.onClickGoToTopicList();
+    goBackToTopicList: function () {
+        AppActions.goBackToTopicList();
     },
 
     renderPostList: function () {
@@ -68,11 +68,11 @@ var TopicPage = React.createClass({
 
         return (
             <div className="cp-topic">
-                <div onClick={that.onClickGoToTopicList.bind(that)}>返回</div>
+                <div onClick={that.goBackToTopicList.bind(that)}>返回</div>
                 {
                     _.map(postList, function (d) {
                         return (
-                            <div className="cp-topic-item" onClick={that.onClickGoToPosDetail.bind(that,d)}>
+                            <div className="cp-topic-item" onClick={that.onClickGoToPostDetail.bind(that,d)}>
                                 <h3>{d.postTitle}</h3>
                                 <div>{d.summary}</div>
                             </div>
@@ -84,8 +84,39 @@ var TopicPage = React.createClass({
     },
 
 
-    renderPostDetail: function () {
+    goBackToPostList:function(){
+        AppActions.goBackToPostList();
+    },
 
+    renderPostDetail: function () {
+        var that = this;
+        var props = this.props;
+        var postDetail = props.postDetail ||{};
+        var replyList = postDetail.pageData || [];
+        var replyListDOM = _.map(replyList,function(r){
+            return (
+                <div>
+                    <h2>{r.createTime}</h2>
+                    <div>
+                    {r.replyContent}
+                        </div>
+                </div>
+            );
+        });
+        if(postDetail){
+            return (
+                <div className="postDetail">
+                    <b onClick={that.goBackToPostList.bind(that,postDetail)}>返回</b>
+                    <h1>{postDetail.postTitle}</h1>
+                    <div dangerouslySetInnerHTML={{__html: postDetail.postContent}}></div>
+                    <div>
+                        {replyListDOM}
+                    </div>
+                </div>
+            );
+        }else {
+            return (<div>加载中...</div>)
+        }
     },
 
 

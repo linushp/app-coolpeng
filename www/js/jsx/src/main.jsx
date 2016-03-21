@@ -40,7 +40,7 @@ var CpApp = React.createClass({
             viewPage = (<div className={["cp-view-p","cp-view0","on"].join(" ")}><HomePage> </HomePage></div>);
         }
         else if (state.tabIndex == 1) {
-            viewPage = <div className={["cp-view-p","cp-view1","on"].join(" ")}><TopicPage topicList={state.topicList} postListPage={state.postListPage}  topicPage={state.topicPage}> </TopicPage></div>;
+            viewPage = <div className={["cp-view-p","cp-view1","on"].join(" ")}><TopicPage topicList={state.topicList} postListPage={state.postListPage} postDetail={state.postDetail} topicPage={state.topicPage}> </TopicPage></div>;
         }
         else if (state.tabIndex == 2) {
             viewPage = <div className={["cp-view-p","cp-view2","on"].join(" ")}><MsgPage> </MsgPage></div>;

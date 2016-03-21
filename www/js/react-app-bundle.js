@@ -100,7 +100,7 @@
 	                { className: ["cp-view-p", "cp-view1", "on"].join(" ") },
 	                React.createElement(
 	                    TopicPage,
-	                    { topicList: state.topicList, postListPage: state.postListPage, topicPage: state.topicPage },
+	                    { topicList: state.topicList, postListPage: state.postListPage, postDetail: state.postDetail, topicPage: state.topicPage },
 	                    " "
 	                )
 	            );
@@ -234,7 +234,8 @@
 	        currentUser: AppCommon.getDataFromLocalStorage("currentUser"),
 	        topicList: AppCommon.getDataFromLocalStorage("topicList"),
 	        topicPage: "topicList", //topicList,postListPage,postDetail
-	        postListPage: []
+	        postListPage: [],
+	        postDetail: null
 	    },
 
 	    getALL: function getALL() {
@@ -262,6 +263,10 @@
 
 	    setPostListPage: function setPostListPage(postListPage) {
 	        AppStore.setData("postListPage", postListPage, false);
+	    },
+
+	    setPostDetail: function setPostDetail(postDetail) {
+	        AppStore.setData("postDetail", postDetail, false);
 	    },
 
 	    setTabIndex: function setTabIndex(tabIndex) {
@@ -312,7 +317,8 @@
 	var _ = __webpack_require__(3);
 	var $ = __webpack_require__(5);
 
-	var contextURL = "http://192.168.0.105:9090/coolpeng";
+	//var contextURL = "http://192.168.0.105:9090/coolpeng";
+	var contextURL = "http://www.coolpeng.cn";
 
 	var AppCommon = {
 
@@ -476,7 +482,7 @@
 	        });
 	    },
 
-	    onClickGoToTopicList: function onClickGoToTopicList() {
+	    goBackToTopicList: function goBackToTopicList() {
 	        AppStore.setTopicPage("topicList");
 	        AppStore.emitChange();
 	    },
@@ -492,6 +498,24 @@
 	                alert(d.responseText);
 	            }
 	        });
+	    },
+
+	    onClickGoToPostDetail: function onClickGoToPostDetail(post) {
+	        var postId = post.id;
+	        AppStore.setTopicPage("postDetail");
+	        AppCommon.ajax("/app/blog/getPostWithReply.json").params({ postId: postId, pageSize: 10, pageNumber: 1 }).req(function (d) {
+	            if (d.responseCode === 0) {
+	                AppStore.setPostDetail(d.data);
+	                AppStore.emitChange();
+	            } else {
+	                alert(d.responseText);
+	            }
+	        });
+	    },
+
+	    goBackToPostList: function goBackToPostList() {
+	        AppStore.setTopicPage("postListPage");
+	        AppStore.emitChange();
 	    }
 
 	};
@@ -637,10 +661,12 @@
 	        );
 	    },
 
-	    onClickGoToPosDetail: function onClickGoToPosDetail() {},
+	    onClickGoToPostDetail: function onClickGoToPostDetail(post) {
+	        AppActions.onClickGoToPostDetail(post);
+	    },
 
-	    onClickGoToTopicList: function onClickGoToTopicList() {
-	        AppActions.onClickGoToTopicList();
+	    goBackToTopicList: function goBackToTopicList() {
+	        AppActions.goBackToTopicList();
 	    },
 
 	    renderPostList: function renderPostList() {
@@ -654,13 +680,13 @@
 	            { className: "cp-topic" },
 	            React.createElement(
 	                "div",
-	                { onClick: that.onClickGoToTopicList.bind(that) },
+	                { onClick: that.goBackToTopicList.bind(that) },
 	                "返回"
 	            ),
 	            _.map(postList, function (d) {
 	                return React.createElement(
 	                    "div",
-	                    { className: "cp-topic-item", onClick: that.onClickGoToPosDetail.bind(that, d) },
+	                    { className: "cp-topic-item", onClick: that.onClickGoToPostDetail.bind(that, d) },
 	                    React.createElement(
 	                        "h3",
 	                        null,
@@ -676,7 +702,60 @@
 	        );
 	    },
 
-	    renderPostDetail: function renderPostDetail() {},
+	    goBackToPostList: function goBackToPostList() {
+	        AppActions.goBackToPostList();
+	    },
+
+	    renderPostDetail: function renderPostDetail() {
+	        var that = this;
+	        var props = this.props;
+	        var postDetail = props.postDetail || {};
+	        var replyList = postDetail.pageData || [];
+	        var replyListDOM = _.map(replyList, function (r) {
+	            return React.createElement(
+	                "div",
+	                null,
+	                React.createElement(
+	                    "h2",
+	                    null,
+	                    r.createTime
+	                ),
+	                React.createElement(
+	                    "div",
+	                    null,
+	                    r.replyContent
+	                )
+	            );
+	        });
+	        if (postDetail) {
+	            return React.createElement(
+	                "div",
+	                { className: "postDetail" },
+	                React.createElement(
+	                    "b",
+	                    { onClick: that.goBackToPostList.bind(that, postDetail) },
+	                    "返回"
+	                ),
+	                React.createElement(
+	                    "h1",
+	                    null,
+	                    postDetail.postTitle
+	                ),
+	                React.createElement("div", { dangerouslySetInnerHTML: { __html: postDetail.postContent } }),
+	                React.createElement(
+	                    "div",
+	                    null,
+	                    replyListDOM
+	                )
+	            );
+	        } else {
+	            return React.createElement(
+	                "div",
+	                null,
+	                "加载中..."
+	            );
+	        }
+	    },
 
 	    render: function render() {
 

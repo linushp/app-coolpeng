@@ -194,7 +194,7 @@ body,html{
 
 
 .cp-view1{
-    background-color: #7d0013;
+    /*background-color: #7d0013;*/
 }
 
 .cp-view2{
@@ -264,4 +264,11 @@ body,html{
 
 .cp-line{
     margin-top: 20px ;
+}
+
+
+.postDetail img{
+    max-width: 90%;
+    display: block;
+    margin: 0 auto;
 }

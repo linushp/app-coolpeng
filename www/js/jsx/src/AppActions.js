@@ -46,7 +46,7 @@ var AppActions = {
         });
     },
 
-    onClickGoToTopicList:function(){
+    goBackToTopicList:function(){
         AppStore.setTopicPage("topicList");
         AppStore.emitChange();
     },
@@ -62,6 +62,25 @@ var AppActions = {
                 alert(d.responseText);
             }
         });
+    },
+
+
+    onClickGoToPostDetail:function(post){
+        var postId = post.id;
+        AppStore.setTopicPage("postDetail");
+        AppCommon.ajax("/app/blog/getPostWithReply.json").params({postId:postId, pageSize:10, pageNumber:1}).req(function (d) {
+            if (d.responseCode === 0) {
+                AppStore.setPostDetail(d.data);
+                AppStore.emitChange();
+            }else {
+                alert(d.responseText);
+            }
+        });
+    },
+
+    goBackToPostList:function(){
+        AppStore.setTopicPage("postListPage");
+        AppStore.emitChange();
     }
 
 };

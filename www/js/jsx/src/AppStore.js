@@ -27,7 +27,8 @@ var AppStore = {
         currentUser: AppCommon.getDataFromLocalStorage("currentUser"),
         topicList: AppCommon.getDataFromLocalStorage("topicList"),
         topicPage:"topicList", //topicList,postListPage,postDetail
-        postListPage:[]
+        postListPage:[],
+        postDetail:null
     },
 
     getALL: function () {
@@ -57,6 +58,9 @@ var AppStore = {
         AppStore.setData("postListPage",postListPage,false);
     },
 
+    setPostDetail:function(postDetail){
+        AppStore.setData("postDetail",postDetail,false);
+    },
 
 
     setTabIndex: function (tabIndex) {
