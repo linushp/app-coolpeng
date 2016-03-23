@@ -1,7 +1,7 @@
 var _ = require("_");
 var $ = require("jQuery");
 
-//var contextURL = "http://192.168.0.105:9090/coolpeng";
+//var contextURL = "http://localhost:9090/coolpeng";
 var contextURL = "http://www.coolpeng.cn";
 
 

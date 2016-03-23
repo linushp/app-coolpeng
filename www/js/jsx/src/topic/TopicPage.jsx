@@ -92,14 +92,13 @@ var TopicPage = React.createClass({
         var that = this;
         var props = this.props;
         var postDetail = props.postDetail ||{};
-        var replyList = postDetail.pageData || [];
+        var replyPageResult = postDetail.replyPageResult ||{};
+        var replyList = replyPageResult.pageData || [];
         var replyListDOM = _.map(replyList,function(r){
             return (
                 <div>
                     <h2>{r.createTime}</h2>
-                    <div>
-                    {r.replyContent}
-                        </div>
+                    <div dangerouslySetInnerHTML={{__html: r.replyContent}}></div>
                 </div>
             );
         });
@@ -112,6 +111,7 @@ var TopicPage = React.createClass({
                     <div>
                         {replyListDOM}
                     </div>
+                    <div style={{height:"60px"}}></div>
                 </div>
             );
         }else {

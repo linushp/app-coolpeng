@@ -317,7 +317,7 @@
 	var _ = __webpack_require__(3);
 	var $ = __webpack_require__(5);
 
-	//var contextURL = "http://192.168.0.105:9090/coolpeng";
+	//var contextURL = "http://localhost:9090/coolpeng";
 	var contextURL = "http://www.coolpeng.cn";
 
 	var AppCommon = {
@@ -490,7 +490,7 @@
 	    onClickGoToPostList: function onClickGoToPostList(topic) {
 	        var moduleId = topic.id;
 	        AppStore.setTopicPage("postListPage");
-	        AppCommon.ajax("/app/blog/getPostList.json").params({ moduleId: moduleId, pageSize: 10, pageNumber: 1 }).req(function (d) {
+	        AppCommon.ajax("/app/blog/getPostList.json").params({ moduleId: moduleId, pageSize: 1000, pageNumber: 1 }).req(function (d) {
 	            if (d.responseCode === 0) {
 	                AppStore.setPostListPage(d.data);
 	                AppStore.emitChange();
@@ -503,7 +503,7 @@
 	    onClickGoToPostDetail: function onClickGoToPostDetail(post) {
 	        var postId = post.id;
 	        AppStore.setTopicPage("postDetail");
-	        AppCommon.ajax("/app/blog/getPostWithReply.json").params({ postId: postId, pageSize: 10, pageNumber: 1 }).req(function (d) {
+	        AppCommon.ajax("/app/blog/getPostWithReply.json").params({ postId: postId, pageSize: 1000, pageNumber: 1 }).req(function (d) {
 	            if (d.responseCode === 0) {
 	                AppStore.setPostDetail(d.data);
 	                AppStore.emitChange();
@@ -710,7 +710,8 @@
 	        var that = this;
 	        var props = this.props;
 	        var postDetail = props.postDetail || {};
-	        var replyList = postDetail.pageData || [];
+	        var replyPageResult = postDetail.replyPageResult || {};
+	        var replyList = replyPageResult.pageData || [];
 	        var replyListDOM = _.map(replyList, function (r) {
 	            return React.createElement(
 	                "div",
@@ -720,11 +721,7 @@
 	                    null,
 	                    r.createTime
 	                ),
-	                React.createElement(
-	                    "div",
-	                    null,
-	                    r.replyContent
-	                )
+	                React.createElement("div", { dangerouslySetInnerHTML: { __html: r.replyContent } })
 	            );
 	        });
 	        if (postDetail) {
@@ -746,7 +743,8 @@
 	                    "div",
 	                    null,
 	                    replyListDOM
-	                )
+	                ),
+	                React.createElement("div", { style: { height: "60px" } })
 	            );
 	        } else {
 	            return React.createElement(

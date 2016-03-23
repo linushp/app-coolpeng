@@ -54,7 +54,7 @@ var AppActions = {
     onClickGoToPostList:function(topic){
         var moduleId = topic.id;
         AppStore.setTopicPage("postListPage");
-        AppCommon.ajax("/app/blog/getPostList.json").params({moduleId:moduleId, pageSize:10, pageNumber:1}).req(function (d) {
+        AppCommon.ajax("/app/blog/getPostList.json").params({moduleId:moduleId, pageSize:1000, pageNumber:1}).req(function (d) {
             if (d.responseCode === 0) {
                 AppStore.setPostListPage(d.data);
                 AppStore.emitChange();
@@ -68,7 +68,7 @@ var AppActions = {
     onClickGoToPostDetail:function(post){
         var postId = post.id;
         AppStore.setTopicPage("postDetail");
-        AppCommon.ajax("/app/blog/getPostWithReply.json").params({postId:postId, pageSize:10, pageNumber:1}).req(function (d) {
+        AppCommon.ajax("/app/blog/getPostWithReply.json").params({postId:postId, pageSize:1000, pageNumber:1}).req(function (d) {
             if (d.responseCode === 0) {
                 AppStore.setPostDetail(d.data);
                 AppStore.emitChange();
